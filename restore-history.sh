@@ -14,7 +14,17 @@ function getHistFile() {
         fi
 }
 
+function getCmdFile() {
+        if [ -n "${TMUX_PANE}" ]; then
+                echo "${HISTS_DIR}/bash_cmd_tmux_$(tmux display-message -t $TMUX_PANE -p '#S:#I:#P')"
+        else
+                echo "${HISTS_DIR}/bash_cmd_no_tmux"
+        fi
+}
+
 function initHist() {
+        echo "" > $(getCmdFile)
+
         HISTFILE=$(getHistFile)
         # Only load history on the second call of this function (first time HISTINIT should be 0)
         if ((HISTINIT == 1)); then
@@ -39,8 +49,18 @@ function initHist() {
 
 # initialization
 HISTINIT=0
+export NO_LOG_COMMAND='true'
 
 initHist
 
+function process_command() {
+  if [ ! -z "$NO_LOG_COMMAND" ] || [ "$BASH_COMMAND" == "export NO_LOG_COMMAND='true'" ]; then
+    return
+  fi
+
+  echo "$BASH_COMMAND" > $(getCmdFile)
+}
+trap process_command DEBUG
+
 # After each command, save history
-PROMPT_COMMAND="initHist; history -a; $PROMPT_COMMAND"
+PROMPT_COMMAND="export NO_LOG_COMMAND='true'; initHist; history -a; unset NO_LOG_COMMAND; $PROMPT_COMMAND"

@@ -6,9 +6,14 @@ export HISTCONTROL=ignoredups:erasedups
 HISTS_DIR=$HOME/.bash_history.d
 mkdir -p "${HISTS_DIR}"
 
+function getSanitizedFileName() {
+  FILENAME=$(tmux display-message -t $TMUX_PANE -p '#S:#I:#P')
+  echo "${FILENAME// /_}"
+}
+
 function getHistFile() {
   if [ -n "${TMUX_PANE}" ]; then
-    echo "${HISTS_DIR}/bash_history_tmux_$(tmux display-message -t $TMUX_PANE -p '#S:#I:#P')"
+    echo "${HISTS_DIR}/bash_history_tmux_$(getSanitizedFileName)"
   else
     echo "${HISTS_DIR}/bash_history_no_tmux"
   fi
@@ -16,7 +21,7 @@ function getHistFile() {
 
 function getCmdFile() {
   if [ -n "${TMUX_PANE}" ]; then
-    echo "${HISTS_DIR}/bash_cmd_tmux_$(tmux display-message -t $TMUX_PANE -p '#S:#I:#P')"
+    echo "${HISTS_DIR}/bash_cmd_tmux_$(getSanitizedFileName)"
   else
     echo "${HISTS_DIR}/bash_cmd_no_tmux"
   fi

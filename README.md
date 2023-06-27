@@ -8,5 +8,6 @@
     * Bash:
         ```
         printf '\n. ~/.rc-files/config.sh' >> ~/.bashrc
+        printf '\n. ~/.rc-files/aliases.sh' >> ~/.bashrc
         printf '\n. ~/.rc-files/restore-history.sh' >> ~/.bashrc
         ```

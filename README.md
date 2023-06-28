@@ -10,3 +10,7 @@
         printf '\n. ~/.rc-files/aliases.sh' >> ~/.bashrc
         printf '\n. ~/.rc-files/restore-history.sh' >> ~/.bashrc
         ```
+    * Powershell:
+        ```
+        cat $env:userprofile/.rc-files/Microsoft.PowerShell_profile.ps1 >>$profile
+        ```

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function reload-session() {
+    # shellcheck disable=SC1090
     . ~/.bashrc
 }
 

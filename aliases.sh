@@ -1,5 +1,17 @@
 #!/bin/bash
 
-alias reload-session=". ~/.bashrc"
-alias devship="airship --use-links"
-alias nvims="nvim -c 'lua Handle_load_session()'"
+function reload-session() {
+    . ~/.bashrc
+}
+
+function devship() {
+    airship --use-links "$@"
+}
+
+function nvims() {
+    nvim -c 'lua Handle_load_session()' "$@"
+}
+
+function cmd() {
+    cmd.exe /c "$@"
+}

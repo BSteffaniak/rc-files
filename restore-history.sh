@@ -9,7 +9,15 @@ HISTS_DIR=$HOME/.bash_history.d
 mkdir -p "${HISTS_DIR}"
 
 function getSanitizedFileName() {
-    FILENAME=$(tmux display-message -t "$TMUX_PANE" -p '#S:#I:#P')
+    WINDOW_NAME=$(tmux display-message -t "$TMUX_PANE" -p '#W')
+    COUNT=$(tmux lsw -F '#W' | grep -c "$WINDOW_NAME")
+    
+    if ((COUNT == "1")); then
+        FILENAME=$(tmux display-message -t "$TMUX_PANE" -p '#S:#W:#P')
+    else
+        FILENAME=$(tmux display-message -t "$TMUX_PANE" -p '#S:#W:#I:#P')
+    fi
+
     echo "${FILENAME// /_}"
 }
 

@@ -2,45 +2,28 @@
 
 # History control
 
+# initialization
+if ((HISTINIT > 0)); then
+    return 0
+fi
+
+export HISTINIT=0
+export NO_LOG_COMMAND='true'
+
 # avoid duplicates..
 export HISTCONTROL=ignoredups:erasedups
 
 HISTS_DIR=$HOME/.bash_history.d
 mkdir -p "${HISTS_DIR}"
 
-function getSanitizedFileName() {
-    WINDOW_NAME=$(tmux display-message -t "$TMUX_PANE" -p '#W')
-    COUNT=$(tmux lsw -F '#W' | grep -c "$WINDOW_NAME")
-    
-    if ((COUNT == "1")); then
-        FILENAME=$(tmux display-message -t "$TMUX_PANE" -p '#S:#W:#P')
-    else
-        FILENAME=$(tmux display-message -t "$TMUX_PANE" -p '#S:#W:#I:#P')
-    fi
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-    echo "${FILENAME// /_}"
-}
-
-function getHistFile() {
-    if [ -n "${TMUX_PANE}" ]; then
-        echo "${HISTS_DIR}/bash_history_tmux_$(getSanitizedFileName)"
-    else
-        echo "${HISTS_DIR}/bash_history_no_tmux"
-    fi
-}
-
-function getCmdFile() {
-    if [ -n "${TMUX_PANE}" ]; then
-        echo "${HISTS_DIR}/bash_cmd_tmux_$(getSanitizedFileName)"
-    else
-        echo "${HISTS_DIR}/bash_cmd_no_tmux"
-    fi
-}
+source "$CURRENT_DIR/history_helpers.sh"
 
 function initHist() {
-    echo "" >"$(getCmdFile)"
+    echo "" >"$(getCmdFile "$TMUX_PANE")"
 
-    HISTFILE=$(getHistFile)
+    HISTFILE=$(getHistFile "$TMUX_PANE")
     # Only load history on the second call of this function (first time HISTINIT should be 0)
     if ((HISTINIT == 1)); then
         echo "Restoring history from histfile $HISTFILE"
@@ -62,10 +45,6 @@ function initHist() {
     fi
 }
 
-# initialization
-HISTINIT=0
-export NO_LOG_COMMAND='true'
-
 initHist
 
 function process_command() {
@@ -73,7 +52,7 @@ function process_command() {
         return
     fi
 
-    echo "$BASH_COMMAND" >"$(getCmdFile)"
+    echo "$BASH_COMMAND" >"$(getCmdFile "$TMUX_PANE")"
 }
 trap process_command DEBUG
 

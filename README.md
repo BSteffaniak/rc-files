@@ -3,12 +3,10 @@
 ### Setup
 
 1. Clone the repo: `git clone git@github.com:BSteffaniak/rc-files.git ~/.rc-files`
-1. Load the files in the rc files:
+1. Load the env in the rc file:
     * Bash:
         ```
-        printf '\n. ~/.rc-files/config.sh' >> ~/.bashrc
-        printf '\n. ~/.rc-files/aliases.sh' >> ~/.bashrc
-        printf '\n. ~/.rc-files/restore-history.sh' >> ~/.bashrc
+        printf '\n[ -f ~/.rc-files/env.sh ] && . ~/.rc-files/env.sh' >>~/.bashrc
         ```
     * Powershell:
         ```

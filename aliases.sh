@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [[ "$(uname)" != "Darwin" ]]; then
+    if grep -q Microsoft /proc/version; then
+        alias pbcopy='clip.exe'
+    else
+        alias pbcopy='xsel --clipboard --input'
+        alias pbpaste='xsel --clipboard --output'
+    fi
+fi
+
 function reload-session() {
     # shellcheck disable=SC1090
     . ~/.bashrc

@@ -52,3 +52,7 @@ reset-flat-logging() {
     disable-flat-logging
     enable-flat-logging
 }
+
+unmarshal-dynamodb() {
+    jq -f ~/unmarshal_dynamodb.jq "$1"
+}

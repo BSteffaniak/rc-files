@@ -23,7 +23,7 @@ function nvims() {
 }
 
 function cmd() {
-    cmd.exe /c "$@"
+    /mnt/c/Windows/System32/cmd.exe /c "$@"
 }
 
 function set-flat-logging-levels() {

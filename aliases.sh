@@ -26,6 +26,29 @@ function cmd() {
     /mnt/c/Windows/System32/cmd.exe /c "$@"
 }
 
+function wincmd() {
+    wd="$(pwd)"
+    mnt_wd="${wd/"$HOME"/"$BRADE"}"
+
+    if [[ ! -d $mnt_wd ]]; then
+        read -p "mnt directory \"$mnt_wd\" doesn't exist. Try creating it? (y/n)? " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Exiting"
+            return 1
+        fi
+
+        mkdir -p "$mnt_wd"
+    fi
+
+    echo "cmd $*"
+
+    (
+        cd "$mnt_wd" || exit 1
+        cmd "$@"
+    )
+}
+
 function set-flat-logging-levels() {
     export LOGGING_LABEL_LOGGING_LEVELS="$1"
 }

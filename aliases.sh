@@ -67,6 +67,26 @@ function wincd() {
     cd "$mnt_wd" || return 1
 }
 
+function winsync() {
+    wd="$(pwd)"
+    mnt_wd="${wd/"$HOME"/"$BRADE"}"
+
+    if [[ ! -d $mnt_wd ]]; then
+        read -p "mnt directory \"$mnt_wd\" doesn't exist. Try creating it? (y/n)? " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Exiting"
+            return 1
+        fi
+
+        mkdir -p "$mnt_wd"
+    fi
+
+    echo "rsync $* -r --exclude \"dist\" --exclude *.db --exclude \"node_modules\" --exclude \"target\" * \"$mnt_wd\""
+
+    rsync "$@" -r --exclude "dist" --exclude ./**/*.db --exclude "node_modules" --exclude "target" ./* "$mnt_wd"
+}
+
 function set-flat-logging-levels() {
     export LOGGING_LABEL_LOGGING_LEVELS="$1"
 }

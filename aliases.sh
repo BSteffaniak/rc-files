@@ -82,9 +82,9 @@ function winsync() {
         mkdir -p "$mnt_wd"
     fi
 
-    echo "rsync $* -r --exclude={'dist','*.db','node_modules','target','.','..'} * .* \"$mnt_wd\""
+    echo "rsync -r --exclude={'dist','*.db','node_modules','target','.','..'} $* * .* \"$mnt_wd\""
 
-    rsync "$@" -r --exclude={'dist','*.db','node_modules','target','.','..'} * .* "$mnt_wd"
+    rsync -r --exclude={'dist','*.db','node_modules','target','.','..'} "$@" * .* "$mnt_wd"
 }
 
 function set-flat-logging-levels() {

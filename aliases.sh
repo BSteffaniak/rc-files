@@ -26,6 +26,46 @@ function cmd() {
     /mnt/c/Windows/System32/cmd.exe /c "$@"
 }
 
+function cmdenv() {
+    env_vars=""
+    while IFS='=' read -r -d '' n v; do
+        if [[ $n = "$VAR" ]]; then
+            local line="${n}=${v}"
+            if [[ -z "$env_vars" ]]; then
+                env_vars="set $line"
+            else
+                env_vars="$env_vars&& set $line"
+            fi
+        fi
+    done < <(env -0)
+
+    echo "cmd /V /C \"$env_vars&& $*\""
+    /mnt/c/Windows/System32/cmd.exe /V /C "$env_vars&& $*"
+}
+
+function wincmdenv() {
+    wd="$(pwd)"
+    mnt_wd="${wd/"$HOME"/"$BRADE"}"
+
+    if [[ ! -d $mnt_wd ]]; then
+        read -p "mnt directory \"$mnt_wd\" doesn't exist. Try creating it? (y/n)? " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Exiting"
+            return 1
+        fi
+
+        mkdir -p "$mnt_wd"
+    fi
+
+    echo "cmdenv $*"
+
+    (
+        cd "$mnt_wd" || exit 1
+        cmdenv "$@"
+    )
+}
+
 function wincmd() {
     wd="$(pwd)"
     mnt_wd="${wd/"$HOME"/"$BRADE"}"

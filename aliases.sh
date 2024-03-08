@@ -41,6 +41,11 @@ function cmdenv() {
 
     echo "cmd /V /C \"$env_vars&& $*\""
     /mnt/c/Windows/System32/cmd.exe /V /C "$env_vars&& $*"
+    # echo "cmd /C \"$env_vars\""
+    # /mnt/c/Windows/System32/cmd.exe /C "$env_vars"
+    # echo "cmd /C $*"
+    # /mnt/c/Windows/System32/cmd.exe /C "$@"
+    # /mnt/c/Windows/System32/cmd.exe /V /C set \"APTABASE_APP_KEY=A-EU-9938610647\" && cargo build --manifest-path=src-tauri/Cargo.toml
 }
 
 function wincmdenv() {
@@ -122,11 +127,23 @@ function winsync() {
         mkdir -p "$mnt_wd"
     fi
 
-    echo "rsync -r --exclude={'.','..','.git'} --exclude-from='.gitignore' $* ./* .* \"$mnt_wd\""
+    local excludes=()
+    if [[ -f ".gitignore" ]]; then
+        excludes+=(--exclude-from='.gitignore')
+    fi
 
-    rsync -r \
+    while read -r filename; do
+        if [[ -f "$filename" ]]; then
+            excludes+=(--exclude-from="$filename")
+        fi
+    done <<<"$(find . -name '.gitignore')"
+
+    echo "rsync $* -r --exclude={'.','..','.git'} ${excludes[*]} $* ./* .* \"$mnt_wd\""
+
+    rsync "$@" \
+        -r \
         --exclude={'.','..','.git'} \
-        --exclude-from='.gitignore' \
+        "${excludes[@]}" \
         "$@" \
         ./* .* \
         "$mnt_wd"

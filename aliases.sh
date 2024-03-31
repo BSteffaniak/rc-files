@@ -28,8 +28,9 @@ function cmd() {
 
 function cmdenv() {
     env_vars=""
+    VARS_ARRAY="$(sed 'y/;/ /' <<<"$VARS")"
     while IFS='=' read -r -d '' n v; do
-        if [[ $n = "$VAR" ]]; then
+        if [[ " ${VARS_ARRAY[*]} " =~ [[:space:]]${n}[[:space:]] ]]; then
             local line="${n}=${v}"
             if [[ -z "$env_vars" ]]; then
                 env_vars="set $line"
@@ -39,13 +40,8 @@ function cmdenv() {
         fi
     done < <(env -0)
 
-    echo "cmd /V /C \"$env_vars&& $*\""
-    /mnt/c/Windows/System32/cmd.exe /V /C "$env_vars&& $*"
-    # echo "cmd /C \"$env_vars\""
-    # /mnt/c/Windows/System32/cmd.exe /C "$env_vars"
-    # echo "cmd /C $*"
-    # /mnt/c/Windows/System32/cmd.exe /C "$@"
-    # /mnt/c/Windows/System32/cmd.exe /V /C set \"APTABASE_APP_KEY=A-EU-9938610647\" && cargo build --manifest-path=src-tauri/Cargo.toml
+    echo "cmd.exe /V /C \"$env_vars&& $*\""
+    cmd.exe /V /C "$env_vars&& $*"
 }
 
 function wincmdenv() {

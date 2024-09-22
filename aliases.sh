@@ -145,6 +145,48 @@ function winsync() {
         "$mnt_wd"
 }
 
+function wingsync() {
+    wd="$(pwd)"
+    mnt_wd="${wd/"$HOME"/"$BRADE"}"
+
+    if [[ ! -d $mnt_wd ]]; then
+        read -p "mnt directory \"$mnt_wd\" doesn't exist. Try creating it? (y/n)? " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Exiting"
+            return 1
+        fi
+
+        git clone "$(git remote get-url origin)" --depth 1 "$mnt_wd" || return 1
+    fi
+
+    local files=()
+    while read -r filename; do
+        if [[ -f "$filename" ]]; then
+            files+=("$filename")
+        fi
+    done <<<"$(git ls-files --others --exclude-standard --modified)"
+
+    if [ ${#files[@]} -eq 0 ]; then
+        echo "No files to copy"
+        return 0
+    fi
+
+    (
+        cd "$mnt_wd" || return 1
+        wincmd git add . || return 1
+        wincmd git stash || return 1
+        wincmd git pull || return 1
+    )
+
+    echo "rsync $* -R ${files[*]} \"$mnt_wd\""
+
+    rsync "$@" \
+        -R \
+        "${files[@]}" \
+        "$mnt_wd"
+}
+
 function set-flat-logging-levels() {
     export LOGGING_LABEL_LOGGING_LEVELS="$1"
 }

@@ -252,10 +252,10 @@ auto-retry() {
     delay=$2
 
     while (( current_attempt++ < max_attempts )); do
-        [[ $(eval "${@:3}") == 0 ]] && exit
+        [[ $(eval "${@:3}") == 0 ]] && return 0
         echo "Failed at attempt ${current_attempt}/${max_attempts}, retrying after ${delay}s"
         sleep $delay
     done
 
-    exit 1
+    return 1
 }

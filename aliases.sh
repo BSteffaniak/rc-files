@@ -245,3 +245,17 @@ benchmark() {
         echo -e '\033[0K\033[30m\033[1m\033[4m\033[41m Red \033[42m Green \033[43m Yellow \033[44m Blue \033[45m Magenta \033[46m Cyan \033[0m'
     done
 }
+
+auto-retry() {
+    current_attempt=0
+    max_attempts=$1
+    delay=$2
+
+    while (( current_attempt++ < max_attempts )); do
+        [[ $(eval "${@:3}") == 0 ]] && exit
+        echo "Failed at attempt ${current_attempt}/${max_attempts}, retrying after ${delay}s"
+        sleep $delay
+    done
+
+    exit 1
+}

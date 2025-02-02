@@ -11,6 +11,7 @@ fi
 
 function reload-session() {
     # shellcheck disable=SC1090
+    . ~/.profile
     . ~/.bashrc
 }
 
